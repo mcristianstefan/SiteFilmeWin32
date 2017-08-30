@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#define MAX_AFISAT 15
+#define MAX_AFISAT 25
 char* TEXT_PRINCIPAL = NULL;
 char* TEXT_GEN = NULL;
 char* TEXT_ACTORI = NULL;
@@ -13,6 +13,7 @@ char* TEXT_REGIZOR = NULL;
 char* TEXT_USER = NULL;
 char* TEXT_COMENT = NULL;
 int NUMAR_AN = 0, NUMAR_MIN = 0, NUMAR_STELE = 0;
+LPCTSTR WindowCaption = L"";
 
 //Functii algoritm///////////////////////////////////
 typedef struct FILM;
@@ -83,7 +84,7 @@ int existaFilm(const char* titlu) {
 }
 int addGen(const char* nume) {
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
-		if (_stricmp(g->nume, nume) == 0) 
+		if (_stricmp(g->nume, nume) == 0)
 			return 0;
 
 	struct GEN* newG = (struct GEN*)malloc(sizeof(struct GEN));
@@ -120,7 +121,7 @@ int addGen(const char* nume) {
 	}
 }
 int addVot(const char* titlu_film, const char* user, const int nr_stele) {
-	if (nr_stele < 1 || nr_stele>10) 
+	if (nr_stele < 1 || nr_stele>10)
 		return 11;
 
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
@@ -177,7 +178,7 @@ int addRegizor(const char* nume_regizor) {
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen) 																		    //
 		for (struct FILM* f = g->first_film; f != NULL; f = f->next_film) 																	//
 			if (f->regizor != NULL)																												//
-				if (_stricmp(f->regizor->nume, nume_regizor)==0)
+				if (_stricmp(f->regizor->nume, nume_regizor) == 0)
 					return 0;
 
 	struct regizor* reg = (struct regizor*)malloc(sizeof(struct regizor));//adaugam noul regizor
@@ -329,12 +330,12 @@ int addFilm(const char* nume_gen, const char* titlu, const int durata, const int
 				la->next_list = ELEM_LISTA;
 				break;
 			}
-				
-		ACT = strtok(NULL, ",;");		
+
+		ACT = strtok(NULL, ",;");
 		RET *= 10;//
 	}																													//
 	free(LISTA);																										//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+																														//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
 		if (_stricmp(g->nume, nume_gen) == 0) {
@@ -379,7 +380,7 @@ int addFilmFromFile(char* nume_fisier) {
 
 	char gen[20], titlu[80], actori[200], regizor[30];
 	int an, minute;
-	
+
 	fgets(gen, 20, file);
 	if (TEXT_GEN != NULL)
 		free(TEXT_GEN);
@@ -410,7 +411,7 @@ int addFilmFromFile(char* nume_fisier) {
 
 	fscanf(file, "%d %d", &an, &minute); NUMAR_MIN = minute; NUMAR_AN = an;
 
-	int RET=addFilm(TEXT_GEN,TEXT_PRINCIPAL,NUMAR_MIN,NUMAR_AN,TEXT_ACTORI,TEXT_REGIZOR);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	int RET = addFilm(TEXT_GEN, TEXT_PRINCIPAL, NUMAR_MIN, NUMAR_AN, TEXT_ACTORI, TEXT_REGIZOR);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	if (file != NULL)
 		fclose(file);
@@ -422,8 +423,8 @@ void printNoutati(HDC hDC, RECT rc, HWND FEREASTRA) {
 	/*PAINTSTRUCT Ps;
 	hDC = BeginPaint(FEREASTRA, &Ps);*/
 	int max = 0, min = 3000;
-	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen) 
-		for (struct FILM* f = g->first_film; f != NULL; f = f->next_film){
+	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
+		for (struct FILM* f = g->first_film; f != NULL; f = f->next_film) {
 			if (f->an > max)
 				max = f->an;
 			if (f->an < min)
@@ -431,35 +432,35 @@ void printNoutati(HDC hDC, RECT rc, HWND FEREASTRA) {
 		}
 
 	int COUNT = MAX_AFISAT;
-	while(max>=min){
-		for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen) 
-			for (struct FILM* f = g->first_film; f != NULL; f = f->next_film) 
+	while (max >= min) {
+		for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
+			for (struct FILM* f = g->first_film; f != NULL; f = f->next_film)
 				if (f->an == max) {
 					gasit = 1;
-					SetRect(&rc, 30, XXX, 400,800); DrawText(hDC, "'", 1 , &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					SetRect(&rc, 30+ 1 * 8, XXX, 400, 800); DrawText(hDC, f->titlu, strlen(f->titlu), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30, XXX, 400, 800); DrawText(hDC, "'", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30 + 1 * 8, XXX, 400, 800); DrawText(hDC, f->titlu, strlen(f->titlu), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					SetRect(&rc, 30 + (1 + strlen(f->titlu)) * 8, XXX, 400, 800); DrawText(hDC, "' (", 3, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					char buff[5]; itoa(f->an, buff, 10);
-					for(int i=0;i<strlen(buff);i++)
-							if (!(buff[i] >= '0'&&buff[i] <= '9')) {
-								if (i == strlen(buff) - 1)
-									buff[i] = NULL;
-								else {
-									int j;
-									for (j = i + 1; j < strlen(buff); j++)
-										buff[j - 1] = buff[j];
-									buff[j] = NULL;
-								}
+					for (int i = 0; i<strlen(buff); i++)
+						if (!(buff[i] >= '0'&&buff[i] <= '9')) {
+							if (i == strlen(buff) - 1)
+								buff[i] = NULL;
+							else {
+								int j;
+								for (j = i + 1; j < strlen(buff); j++)
+									buff[j - 1] = buff[j];
+								buff[j] = NULL;
 							}
-					SetRect(&rc, 30 + (4 + strlen(f->titlu))*8, XXX, 400, 800); DrawText(hDC, buff,strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					SetRect(&rc, 30 + (8 + strlen(f->titlu))*8, XXX, 400, 800); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+						}
+					SetRect(&rc, 30 + (4 + strlen(f->titlu)) * 8, XXX, 400, 800); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30 + (8 + strlen(f->titlu)) * 8, XXX, 400, 800); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					int gen_gata = 0;
 					for (struct GEN* gg = FIRST_GEN; gg != NULL; gg = gg->next_gen) {
 						for (struct FILM* ff = gg->first_film; ff != NULL; ff = ff->next_film)
 							if (_stricmp(ff->titlu, f->titlu) == 0) {
 								SetRect(&rc, 30 + (10 + strlen(f->titlu)) * 8, XXX, 400, 800); DrawText(hDC, gg->nume, strlen(gg->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 								COUNT--;
-								if(COUNT == 0)//afisam maxim 15 noutati
+								if (COUNT == 0)//afisam maxim 15 noutati
 									return;
 								gen_gata = 1;
 								break;
@@ -471,32 +472,32 @@ void printNoutati(HDC hDC, RECT rc, HWND FEREASTRA) {
 					XXX += 16;
 				}
 		max--;
-	 }
+	}
 	if (gasit == 0) {
 		SetRect(&rc, 30, XXX, 400, 800); DrawText(hDC, "Nu s-au gasit rezultate.", 23, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	}
 	/*EndPaint(FEREASTRA, &Ps);*/
 }
-void printFilmePeGen(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_gen) {
+void printFilmePeGen(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_gen) {
 	int XXX = 30;
 	int gasit = 0;
 	/*PAINTSTRUCT Ps;
 	hDC = BeginPaint(FEREASTRA, &Ps);*/
-	
+
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
 		if (_stricmp(g->nume, nume_gen) == 0) {
 			gasit = 1;
 			SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "##### ", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 			SetRect(&rc, 30 + 6 * 8, XXX, 500, 700); DrawText(hDC, g->nume, strlen(g->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-			SetRect(&rc, 30+ (6+strlen(g->nume)) * 8, XXX, 500, 700); DrawText(hDC, " #####",6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-			XXX +=45;
+			SetRect(&rc, 30 + (6 + strlen(g->nume)) * 8, XXX, 500, 700); DrawText(hDC, " #####", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+			XXX += 45;
 
 			int are = 0;
 			for (struct FILM* f = g->first_film; f != NULL; f = f->next_film) {
 				are = 1;
 				SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "'", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				SetRect(&rc, 30 + 1 * 8, XXX, 500, 700); DrawText(hDC, f->titlu, strlen(f->titlu), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30 + (1+ strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, "' (", 3, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (1 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, "' (", 3, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				char buff[5]; itoa(f->an, buff, 10);
 				for (int i = 0; i<strlen(buff); i++)
 					if (!(buff[i] >= '0'&&buff[i] <= '9')) {
@@ -509,9 +510,9 @@ void printFilmePeGen(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_gen) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30 + (4 + strlen(f->titlu))* 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30 + (8 + strlen(f->titlu))* 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				
+				SetRect(&rc, 30 + (4 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (8 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+
 				char buf[4];
 				itoa(f->durata, buf, 10);
 				for (int i = 0; i<strlen(buf); i++)
@@ -526,7 +527,7 @@ void printFilmePeGen(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_gen) {
 						}
 					}
 				SetRect(&rc, 30 + (10 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, buf, strlen(buf), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30 + (10 + strlen(f->titlu)+strlen(buf)) * 8, XXX, 500, 700); DrawText(hDC, " min", 4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (10 + strlen(f->titlu) + strlen(buf)) * 8, XXX, 500, 700); DrawText(hDC, " min", 4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				XXX += 16;
 			}
 			if (are == 0) {
@@ -544,19 +545,19 @@ void printListaGenuri(HDC hDC, RECT rc, HWND FEREASTRA) {
 	int YYY = 30;
 	int count = 0;
 	int gasit = 0;
-	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen){
-			gasit = 1;
-			SetRect(&rc, YYY, XXX, 300, 100); DrawText(hDC, g->nume, strlen(g->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-			XXX +=16;
-			count++;
-			if (count == 9) {
-				count = 0;
-				YYY += 120;
-				XXX = 30;
-			}
+	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen) {
+		gasit = 1;
+		SetRect(&rc, YYY, XXX, 300, 100); DrawText(hDC, g->nume, strlen(g->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		XXX += 16;
+		count++;
+		if (count == 9) {
+			count = 0;
+			YYY += 120;
+			XXX = 30;
 		}
+	}
 	if (gasit == 0) {
-		SetRect(&rc, 30, XXX, 300, 100); DrawText(hDC, "Nu exista genuri adaugate.",26, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 30, XXX, 300, 100); DrawText(hDC, "Nu exista genuri adaugate.", 26, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	}
 }
 void printListaRegizori(HDC hDC, RECT rc, HWND FEREASTRA) {
@@ -567,7 +568,7 @@ void printListaRegizori(HDC hDC, RECT rc, HWND FEREASTRA) {
 	for (struct regizor* r = FIRST_REG; r != NULL; r = r->next_regizor) {
 		gasit = 1;
 		SetRect(&rc, YYY, XXX, 300, 100); DrawText(hDC, r->nume, strlen(r->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-		XXX +=16;
+		XXX += 16;
 		count++;
 		if (count == 9) {
 			count = 0;
@@ -587,7 +588,7 @@ void printListaActori(HDC hDC, RECT rc, HWND FEREASTRA) {
 	for (struct actor* a = FIRST_ACTOR; a != NULL; a = a->next_actor) {
 		gasit = 1;
 		SetRect(&rc, YYY, XXX, 600, 400); DrawText(hDC, a->nume, strlen(a->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-		XXX +=16;
+		XXX += 16;
 		count++;
 		if (count == 15) {
 			count = 0;
@@ -629,8 +630,8 @@ void printDetaliiActor(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_actor) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30 + (4 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30 + (8 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (4 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (8 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				itoa(lf->film->durata, buff, 10);
 				for (int i = 0; i<strlen(buff); i++)
 					if (!(buff[i] >= '0'&&buff[i] <= '9')) {
@@ -643,9 +644,9 @@ void printDetaliiActor(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_actor) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30+(10 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30+(13 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, " min, ", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				
+				SetRect(&rc, 30 + (10 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (13 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, " min, ", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+
 				int gen_gata = 0;
 				for (struct GEN* gg = FIRST_GEN; gg != NULL; gg = gg->next_gen) {
 					for (struct FILM* ff = gg->first_film; ff != NULL; ff = ff->next_film)
@@ -658,7 +659,7 @@ void printDetaliiActor(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_actor) {
 						break;
 					}
 				}
-				XXX +=32;
+				XXX += 32;
 			}
 			if (are == 0) {
 				SetRect(&rc, 30, 30, 480, 250); DrawText(hDC, "Nu exista filme asociate.", 25, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
@@ -670,16 +671,16 @@ void printDetaliiActor(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_actor) {
 	SetRect(&rc, 30 + 39 * 8, 30, 480, 250); DrawText(hDC, nume_actor, strlen(nume_actor), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	//EndPaint(FEREASTRA, &Ps);
 }
-void printDetaliiRegizor(HDC hDC, RECT rc,HWND FEREASTRA,char* nume_regizor) {
+void printDetaliiRegizor(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_regizor) {
 	int XXX = 30;
 	/*PAINTSTRUCT Ps;
 	hDC = BeginPaint(FEREASTRA, &Ps);*/
 	for (struct regizor* r = FIRST_REG; r != NULL; r = r->next_regizor)
 		if (_stricmp(r->nume, nume_regizor) == 0) {
-			SetRect(&rc, 30, XXX, 480, 250); DrawText(hDC,"REGIZORUL ",10, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+			SetRect(&rc, 30, XXX, 480, 250); DrawText(hDC, "REGIZORUL ", 10, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 			SetRect(&rc, 30 + 11 * 8, XXX, 480, 250); DrawText(hDC, nume_regizor, strlen(nume_regizor), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-			SetRect(&rc, 30+ (11+strlen(nume_regizor)) * 8, XXX, 480, 250); DrawText(hDC, ":",1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-			XXX +=45;
+			SetRect(&rc, 30 + (11 + strlen(nume_regizor)) * 8, XXX, 480, 250); DrawText(hDC, ":", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+			XXX += 45;
 
 			int are = 0;
 			for (struct lista_filme* lf = r->first_lista_filme; lf != NULL; lf = lf->next_list) {
@@ -699,8 +700,8 @@ void printDetaliiRegizor(HDC hDC, RECT rc,HWND FEREASTRA,char* nume_regizor) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30+ (4 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30+ (8 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (4 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (8 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				itoa(lf->film->durata, buff, 10);
 				for (int i = 0; i<strlen(buff); i++)
 					if (!(buff[i] >= '0'&&buff[i] <= '9')) {
@@ -713,9 +714,9 @@ void printDetaliiRegizor(HDC hDC, RECT rc,HWND FEREASTRA,char* nume_regizor) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30+(10 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30+(13 + strlen(lf->film->titlu))* 8, XXX, 480, 250); DrawText(hDC, " min, ", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				
+				SetRect(&rc, 30 + (10 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (13 + strlen(lf->film->titlu)) * 8, XXX, 480, 250); DrawText(hDC, " min, ", 6, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+
 				int gen_gata = 0;
 				for (struct GEN* gg = FIRST_GEN; gg != NULL; gg = gg->next_gen) {
 					for (struct FILM* ff = gg->first_film; ff != NULL; ff = ff->next_film)
@@ -728,19 +729,19 @@ void printDetaliiRegizor(HDC hDC, RECT rc,HWND FEREASTRA,char* nume_regizor) {
 						break;
 					}
 				}
-				XXX +=32;
+				XXX += 32;
 			}
 			if (are == 0) {
 				SetRect(&rc, 30, 30, 480, 250); DrawText(hDC, "Nu exista filme asociate.", 25, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 			}
 			return;
 		}
-	
+
 	SetRect(&rc, 30, 30, 480, 250); DrawText(hDC, "Nu s-au gasit rezultate pentru regizorul ", 41, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	SetRect(&rc, 30 + 41 * 8, 30, 480, 250); DrawText(hDC, nume_regizor, strlen(nume_regizor), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	//EndPaint(FEREASTRA, &Ps);
 }
-void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
+void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA, char* nume_film) {
 	struct lista_cautare* ListaCuRezultateleCautariiDeFilme = NULL;
 	int dimF = 0, dimT = 0, di = 0, dj = 0, max = 0, nr_rezultate = 0, nr_cuv_scris = 0;;
 	char* NUME_F = NULL;
@@ -874,9 +875,9 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 			}//gata adaugarea///////////////////////////////////////////////////////////////////////////////
 
 		}//000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-		
-	/*PAINTSTRUCT Ps;
-	hDC = BeginPaint(FEREASTRA, &Ps);*/
+
+		 /*PAINTSTRUCT Ps;
+		 hDC = BeginPaint(FEREASTRA, &Ps);*/
 	int XXX = 30;
 	char tx[100];
 	if (nr_rezultate == 0) {
@@ -885,7 +886,7 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 	}
 	else {
 		strcpy(tx, "S-A(U) GASIT ");
-		char buff[3]; itoa(nr_rezultate, buff, 10); 
+		char buff[3]; itoa(nr_rezultate, buff, 10);
 		for (int i = 0; i<strlen(buff); i++)
 			if (!(buff[i] >= '0'&&buff[i] <= '9')) {
 				if (i == strlen(buff) - 1)
@@ -902,14 +903,14 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 		strcat(tx, nume_film);
 		strcat(tx, "' :");
 		SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, tx, strlen(tx), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-		XXX+=45;
+		XXX += 45;
 
 		int i = 0;
 		while (max > 0) {
 			for (struct lista_cautare* lf = ListaCuRezultateleCautariiDeFilme; lf != NULL; lf = lf->next_list, i++)
 				if (lf->potriviri == max) {
 					SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "  (", 3, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					char buf[3]; itoa(lf->potriviri, buf, 10); 
+					char buf[3]; itoa(lf->potriviri, buf, 10);
 					for (int i = 0; i<strlen(buf); i++)
 						if (!(buf[i] >= '0'&&buf[i] <= '9')) {
 							if (i == strlen(buf) - 1)
@@ -935,9 +936,9 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 								fub[j] = NULL;
 							}
 						}
-					SetRect(&rc, 30 + 7 * 8, XXX, 500, 700); DrawText(hDC, fub,strlen(fub), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30 + 7 * 8, XXX, 500, 700); DrawText(hDC, fub, strlen(fub), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					SetRect(&rc, 30 + 10 * 8, XXX, 500, 700); DrawText(hDC, ")", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					XXX+=16;
+					XXX += 16;
 
 					SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "'", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					SetRect(&rc, 30 + 1 * 8, XXX, 500, 700); DrawText(hDC, lf->film->titlu, strlen(lf->film->titlu), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
@@ -954,9 +955,9 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 								buff[j] = NULL;
 							}
 						}
-					SetRect(&rc, 30+ (4 + strlen(lf->film->titlu))* 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					SetRect(&rc, 30+ (8 + strlen(lf->film->titlu))* 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					itoa(lf->film->durata, buff, 10); 
+					SetRect(&rc, 30 + (4 + strlen(lf->film->titlu)) * 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30 + (8 + strlen(lf->film->titlu)) * 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					itoa(lf->film->durata, buff, 10);
 					for (int i = 0; i<strlen(buff); i++)
 						if (!(buff[i] >= '0'&&buff[i] <= '9')) {
 							if (i == strlen(buff) - 1)
@@ -968,9 +969,9 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 								buff[j] = NULL;
 							}
 						}
-					SetRect(&rc, 30+ (10 + strlen(lf->film->titlu))* 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					SetRect(&rc, 30+ (13 + strlen(lf->film->titlu))* 8, XXX, 500, 700); DrawText(hDC, " min", 4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					XXX+=16;
+					SetRect(&rc, 30 + (10 + strlen(lf->film->titlu)) * 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					SetRect(&rc, 30 + (13 + strlen(lf->film->titlu)) * 8, XXX, 500, 700); DrawText(hDC, " min", 4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+					XXX += 16;
 
 					int gen_gata = 0;
 					for (struct GEN* gg = FIRST_GEN; gg != NULL; gg = gg->next_gen) {
@@ -985,11 +986,11 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 							break;
 						}
 					}
-					XXX +=16;
+					XXX += 16;
 
 					SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "  Regizor: ", 11, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 					SetRect(&rc, 30 + 11 * 8, XXX, 500, 700); DrawText(hDC, lf->film->regizor->nume, strlen(lf->film->regizor->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-					XXX+=16;
+					XXX += 16;
 
 					if (nr_rezultate == 1) {//detalii mai multe doar la o cautare exacta
 						SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "  Rating: ", 10, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
@@ -999,7 +1000,7 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 						file = fopen("a.txt", "r");
 						fgets(buff, 4, file);
 						fclose(file);
-						SetRect(&rc, 30 + 10 * 8, XXX, 500, 700); DrawText(hDC, buff,4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+						SetRect(&rc, 30 + 10 * 8, XXX, 500, 700); DrawText(hDC, buff, 4, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 						SetRect(&rc, 30 + 14 * 8, XXX, 500, 700); DrawText(hDC, " (", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 						itoa(lf->film->rating->nr_voturi, buf, 10);
 						for (int i = 0; i<strlen(buf); i++)
@@ -1015,20 +1016,20 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 							}
 						SetRect(&rc, 30 + 16 * 8, XXX, 500, 700); DrawText(hDC, buf, strlen(buf), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 						SetRect(&rc, 30 + 20 * 8, XXX, 500, 700); DrawText(hDC, " voturi)", 8, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-						XXX +=16;
+						XXX += 16;
 
 						SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "  Actori: ", 10, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 						for (struct lista_actori* a = lf->film->first_list_actori; a != NULL; a = a->next_list) {
 							SetRect(&rc, 30 + 10 * 8, XXX, 500, 700); DrawText(hDC, a->actor->nume, strlen(a->actor->nume), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-							XXX +=16;
+							XXX += 16;
 						}
 
 						SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "  Comentarii: ", 13, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-						XXX +=16;
+						XXX += 16;
 						if (lf->film->rating->first_list_com != NULL) {
 							for (struct comentariu* com = lf->film->rating->first_list_com; com != NULL; com = com->next_com) {
 								SetRect(&rc, 30 + 6 * 8, XXX, 500, 700); DrawText(hDC, com->coment, strlen(com->coment), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-								XXX +=16;
+								XXX += 16;
 							}
 						}
 						else {
@@ -1050,7 +1051,7 @@ void printDetaliiFilm(HDC hDC, RECT rc, HWND FEREASTRA,char* nume_film) {
 				free(LF_ITEM); LF_ITEM = NULL;
 			}
 }
-void printFilmePeAn(HDC hDC, RECT rc, HWND FEREASTRA,const int an) {
+void printFilmePeAn(HDC hDC, RECT rc, HWND FEREASTRA, const int an) {
 	char buf[5]; itoa(an, buf, 10);
 	for (int i = 0; i<strlen(buf); i++)
 		if (!(buf[i] >= '0'&&buf[i] <= '9')) {
@@ -1070,7 +1071,7 @@ void printFilmePeAn(HDC hDC, RECT rc, HWND FEREASTRA,const int an) {
 	SetRect(&rc, 30, XXX, 500, 700); DrawText(hDC, "FILME DIN ANUL ", 15, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	SetRect(&rc, 30 + 15 * 8, XXX, 500, 700); DrawText(hDC, buf, strlen(buf), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 	SetRect(&rc, 30 + 19 * 8, XXX, 500, 700); DrawText(hDC, ":", 1, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-	XXX+=45;
+	XXX += 45;
 
 	int gasit = 0;
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
@@ -1093,8 +1094,8 @@ void printFilmePeAn(HDC hDC, RECT rc, HWND FEREASTRA,const int an) {
 							buff[j] = NULL;
 						}
 					}
-				SetRect(&rc, 30+ (4 + strlen(f->titlu))* 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-				SetRect(&rc, 30+ (8 + strlen(f->titlu))* 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (4 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, buff, strlen(buff), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+				SetRect(&rc, 30 + (8 + strlen(f->titlu)) * 8, XXX, 500, 700); DrawText(hDC, "),", 2, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 				int gen_gata = 0;
 				for (struct GEN* gg = FIRST_GEN; gg != NULL; gg = gg->next_gen) {
 					for (struct FILM* ff = gg->first_film; ff != NULL; ff = ff->next_film)
@@ -1116,19 +1117,22 @@ void printFilmePeAn(HDC hDC, RECT rc, HWND FEREASTRA,const int an) {
 }
 int save() {
 	int ok = 0;
+	FILE* ForLoad = fopen("load.txt", "w");
 	for (struct GEN* g = FIRST_GEN; g != NULL; g = g->next_gen)
 		for (struct FILM* f = g->first_film; f != NULL; f = f->next_film) {
 			ok = 1;
 			char* nume = (char*)malloc((strlen(f->titlu) + 5) * sizeof(char));
 			strcpy(nume, f->titlu); strcat(nume, ".txt");
-			FILE* file = fopen(nume,"w");
+
+			fputs(nume, ForLoad); fputs("\n", ForLoad);//se salveaza in lista de load
+			FILE* file = fopen(nume, "w");
 
 			fputs(g->nume, file); fputs("\n", file);
 			fputs(f->titlu, file); fputs("\n", file);
 			for (struct lista_actori* la = f->first_list_actori; la != NULL; la = la->next_list) {
 				fputs(la->actor->nume, file);
-				if(la->next_list!=NULL)
-					 fputs(",", file);
+				if (la->next_list != NULL)
+					fputs(",", file);
 			}
 			fputs("\n", file);
 			fputs(f->regizor->nume, file); fputs("\n", file);
@@ -1162,7 +1166,39 @@ int save() {
 			fclose(file);
 			free(nume); nume = NULL;
 		}
+	fclose(ForLoad);
 	return ok;
+}
+int load() {
+	FILE* file = fopen("load.txt", "r");
+	if (file == NULL)
+		return 0;
+
+	int ok = -1;
+	int count = 0;
+	char doc[30];
+	while (fgets(doc, 30, file)) {
+		int i = addFilmFromFile(doc);
+		if (i == -1) {
+			char text[100]; strcpy(text, "Eroare deschidere fisier "); strcat(text, doc);
+			MessageBox(NULL, text, WindowCaption, MB_OK);
+		}
+		else if (i == 0) {
+			char text[100]; strcpy(text, "Filmul din fisierul "); strcat(text, doc); strcat(text, " exista deja in site.");
+			MessageBox(NULL, text, WindowCaption, MB_OK);
+		}
+		else count++;
+	}
+
+	char tex[100];
+	char buff[4];
+	itoa(count, buff, 10);
+	strcpy(tex, "S-a(u) adaugat "); strcat(tex, buff); strcat(tex, "  film(e).");
+	MessageBox(NULL, tex, WindowCaption, MB_OK);
+	if (count == 0)
+		return -1;
+	return 1;
+	fclose(file);
 }
 void delAll() {
 	struct FILM* FILMUL = NULL;
@@ -1241,12 +1277,11 @@ void delAll() {
 //Variabile globale WIN32//////////////////////////////////////////
 HWND FEREASTRA01, FEREASTRA_RezCautareFilme, FEREASTRA_AddGen, FEREASTRA_AddVot, FEREASTRA_AddComentariu, FEREASTRA_AddFilm, FEREASTRA_AddFilmFromFile, FEREASTRA_AddActor, FEREASTRA_AddRegizor;
 HWND FEREASTRA_CautaGen, FEREASTRA_CautaAn, FEREASTRA_CautaActor, FEREASTRA_CautaRegizor, FEREASTRA_Noutati, FEREASTRA_RezCautareGen, FEREASTRA_RezCautareAn, FEREASTRA_RezCautareActor, FEREASTRA_RezCautareRegizor;
-HWND label01, label02, label03, label04, label05, label06,label07,label08, label09, label10, label11,label12,label13,label14,label15,label16,label17, label18, label19, label20, label21;
+HWND label01, label02, label03, label04, label05, label06, label07, label08, label09, label10, label11, label12, label13, label14, label15, label16, label17, label18, label19, label20, label21;
 HBITMAP hBitmap01 = NULL;
 
 HINSTANCE gINST, gPrevINST;
 PWSTR gCMD;
-LPCTSTR WindowCaption = L"";
 BOOL WINAPI GetMessage(
 	_Out_    LPMSG lpMsg,
 	_In_opt_ HWND  hWnd,
@@ -1290,6 +1325,7 @@ void AddMenus(HWND);
 #define IDM_ADD_COMMENT 12
 #define IDM_SAVE 13
 #define IDM_EXIT 14
+#define IDM_LOAD 15
 
 //Butoane ferestre///////////////////////////////////////////////////
 #define IDM_BUTON_CAUTA_FILME 21
@@ -1557,7 +1593,7 @@ void WINAPI window_CAUTA_ACTOR(HINSTANCE hInstance_REZ, HINSTANCE hPrevInstance_
 
 	FEREASTRA_CautaActor = CreateWindowW(wc_rez.lpszClassName, L"Cauta actor",      /////////////////       /////////////////////
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		300, 300,600,400, 0, 0, hInstance_REZ, 0); //////////////////////////////////////
+		300, 300, 600, 400, 0, 0, hInstance_REZ, 0); //////////////////////////////////////
 
 	while (GetMessage(&msg_rez, NULL, 0, 0)) {
 		TranslateMessage(&msg_rez);
@@ -1703,6 +1739,7 @@ void AddMenus(HWND FEREASTRA)
 
 	h0Menu = CreateMenu();
 	AppendMenuW(h0Menu, MF_STRING, IDM_SAVE, L"&Salveaza filme");
+	AppendMenuW(h0Menu, MF_STRING, IDM_LOAD, L"&Importa filme");
 	AppendMenuW(h0Menu, MF_SEPARATOR, 0, NULL);
 	AppendMenuW(h0Menu, MF_STRING, IDM_EXIT, L"Iesire");
 
@@ -1739,8 +1776,8 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 	PAINTSTRUCT   ps;
 	HDC           hDC;
 	int wmId, wmEvent;
+	RECT rc;
 
-	
 	switch (msg)
 	{
 	case WM_COMMAND: {
@@ -1891,6 +1928,14 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 			else MessageBox(NULL, "Nu exista momentan filme de salvat.", WindowCaption, MB_OK);
 			break;
 		}
+		case IDM_LOAD: {
+			int i = load(); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< SAVE
+			if (i == 1)
+				MessageBox(NULL, "S-au importat filme din fisierele mentionate in load.txt", WindowCaption, MB_OK);
+			if (i == 0)
+				MessageBox(NULL, "Nu exista filme de importat.", WindowCaption, MB_OK);
+			break;
+		}
 		case IDM_EXIT: {
 			SendMessage(FEREASTRA, WM_CLOSE, 0, 0);
 			break;
@@ -1903,7 +1948,7 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 		AddMenus(FEREASTRA);
 		HFONT hfDefault;
 		HWND hEdit;
-		
+
 		label01 = CreateWindow(TEXT("Edit"), TEXT("Titlu film..."),
 			WS_VISIBLE | WS_CHILD,
 			20, 170, 300, 25,
@@ -1911,7 +1956,7 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 		CreateWindow(TEXT("button"), TEXT("Cauta"),
 			WS_VISIBLE | WS_CHILD,
 			325, 170, 95, 25,  //margine stanga, margine sus, lungime, latime
-			FEREASTRA, (HMENU)IDM_BUTON_CAUTA_FILME, NULL, NULL); 
+			FEREASTRA, (HMENU)IDM_BUTON_CAUTA_FILME, NULL, NULL);
 		CreateWindow(TEXT("button"), TEXT("Noutati"),
 			WS_VISIBLE | WS_CHILD,
 			100, 210, 240, 25,  //margine stanga, margine sus, lungime, latime
@@ -1928,22 +1973,47 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 	}
 	case WM_PAINT: {
 		hDC = BeginPaint(FEREASTRA, &ps);
-		LoadAndBlitBitmap( "d:\\wood.bmp", hDC);
+		GetClientRect(FEREASTRA, &rc);
+
+		char l0[51] = "________________________________________________";
+		char l1[51] = "_##########_##_##_______####_____####_##########";
+		char l2[51] = "_##########_##_##_______######_######_##########";
+		char l3[51] = "_##_________##_##_______##__#####__##_##________";
+		char l4[51] = "_######_____##_##_______##____#____##_##########";
+		char l5[51] = "_######_____##_##_______##_________##_##########";
+		char l6[51] = "_##_________##_##_______##_________##_##________";
+		char l7[51] = "_##_________##_########_##_________##_##########";
+		char l8[73] = "  ##                 .##  ########  ##                 .##  ##########";
+		char l9[98] = "                                                                                              ";
+
+		SetRect(&rc, 20, 18, 450, 350); DrawText(hDC, l0, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 30, 450, 350); DrawText(hDC, l1, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 42, 450, 350); DrawText(hDC, l2, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 54, 450, 350); DrawText(hDC, l3, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 66, 450, 350); DrawText(hDC, l4, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 78, 450, 350); DrawText(hDC, l5, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 90, 450, 350); DrawText(hDC, l6, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 102, 450, 350); DrawText(hDC, l7, 50, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 114, 450, 350); DrawText(hDC, l8, 72, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		SetRect(&rc, 20, 126, 450, 350); DrawText(hDC, l9, 97, &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+
+		ReleaseDC(0, hDC);
+		/*LoadAndBlitBitmap( "d:/wood.bmp", hDC);*/
 		EndPaint(FEREASTRA, &ps);
 		break;
 	}
 
-	/*case WM_DRAWITEM: {
-		LPDRAWITEMSTRUCT pDIS = (LPDRAWITEMSTRUCT)ParamClickStanga;
-		if (pDIS->CtlID == IDC_PNG)
-		{
-			HICON hIcon = (HICON)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(ICO_LOGO), IMAGE_ICON, 0, 0, LR_LOADTRANSPARENT);
-			DrawIconEx(pDIS->hDC, 0, 0, hIcon, 0, 0, 0, NULL, DI_NORMAL);
-			DestroyIcon(hIcon);
-			return TRUE;
-		}
-		break;
-	}*/
+				   //case WM_DRAWITEM: {
+				   /*	LPDRAWITEMSTRUCT pDIS = (LPDRAWITEMSTRUCT)ParamClickStanga;
+				   if (pDIS->CtlID == IDC_PNG)
+				   {
+				   HICON hIcon = (HICON)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(ICO_LOGO), IMAGE_ICON, 0, 0, LR_LOADTRANSPARENT);
+				   DrawIconEx(pDIS->hDC, 0, 0, hIcon, 0, 0, 0, NULL, DI_NORMAL);
+				   DestroyIcon(hIcon);
+				   return TRUE;
+				   }
+				   break;
+				   }*/
 
 	case WM_DESTROY: {
 		if (TEXT_PRINCIPAL != NULL) {
@@ -1975,66 +2045,66 @@ LRESULT CALLBACK WndProc01(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LP
 }
 
 LRESULT CALLBACK WndProcRezCautareFilme(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga, LPARAM ParamClickDreapta)
-{	
+{
 	HDC hDC;
 	PAINTSTRUCT Ps;
 	RECT rc;
 	switch (msg)
 	{
-		case WM_COMMAND:
-			switch (LOWORD(ParamClickStanga))
-			{
-				case IDM_BUTON_VOT:{
-					HINSTANCE* hInstance_r=(HINSTANCE*)malloc(sizeof(HINSTANCE));
-					int nCmdShow_r=10;
-					window_ADD_VOT(*hInstance_r, NULL, NULL,nCmdShow_r);
-					free(hInstance_r);
-					break;
-				}
-				case IDM_BUTON_COMMENT: {
-					HINSTANCE* hInstance_r = (HINSTANCE*)malloc(sizeof(HINSTANCE));
-					int nCmdShow_r = 10;
-					window_ADD_COMENTARIU(*hInstance_r, NULL, NULL, nCmdShow_r);
-					free(hInstance_r);
-					break;
-				}
-			}
-			break;
-
-		case WM_CREATE:{
-
-			if (existaFilm(TEXT_PRINCIPAL)==1) {
-				CreateWindow(TEXT("button"), TEXT("Acorda Stele"),
-					WS_VISIBLE | WS_CHILD,
-					20, 500, 150, 25,
-					FEREASTRA, (HMENU)IDM_BUTON_VOT, NULL, NULL);
-
-				CreateWindow(TEXT("button"), TEXT("Comentariu"),
-					WS_VISIBLE | WS_CHILD,
-					200, 500, 150, 25,
-					FEREASTRA, (HMENU)IDM_BUTON_COMMENT, NULL, NULL);
-			}
+	case WM_COMMAND:
+		switch (LOWORD(ParamClickStanga))
+		{
+		case IDM_BUTON_VOT: {
+			HINSTANCE* hInstance_r = (HINSTANCE*)malloc(sizeof(HINSTANCE));
+			int nCmdShow_r = 10;
+			window_ADD_VOT(*hInstance_r, NULL, NULL, nCmdShow_r);
+			free(hInstance_r);
 			break;
 		}
-		case WM_SIZE:{
-			HWND hEdit;
-			GetClientRect(FEREASTRA, &rc);
-			hEdit = GetDlgItem(FEREASTRA, IDC_MAIN_EDIT);
-			SetWindowPos(hEdit, NULL, 0, 0, rc.right, rc.bottom, SWP_NOZORDER);
-			break;
-		}	
-		case WM_PAINT: {
-			hDC = BeginPaint(FEREASTRA, &Ps);
-			GetClientRect(FEREASTRA, &rc);
-			printDetaliiFilm(hDC,rc,FEREASTRA,TEXT_PRINCIPAL);///////////////////////////////
-			ReleaseDC(0, hDC);
+		case IDM_BUTON_COMMENT: {
+			HINSTANCE* hInstance_r = (HINSTANCE*)malloc(sizeof(HINSTANCE));
+			int nCmdShow_r = 10;
+			window_ADD_COMENTARIU(*hInstance_r, NULL, NULL, nCmdShow_r);
+			free(hInstance_r);
 			break;
 		}
-		case WM_DESTROY: {
-			EndPaint(FEREASTRA, &Ps);
-			PostQuitMessage(0);
-			break;
 		}
+		break;
+
+	case WM_CREATE: {
+
+		if (existaFilm(TEXT_PRINCIPAL) == 1) {
+			CreateWindow(TEXT("button"), TEXT("Acorda Stele"),
+				WS_VISIBLE | WS_CHILD,
+				20, 500, 150, 25,
+				FEREASTRA, (HMENU)IDM_BUTON_VOT, NULL, NULL);
+
+			CreateWindow(TEXT("button"), TEXT("Comentariu"),
+				WS_VISIBLE | WS_CHILD,
+				200, 500, 150, 25,
+				FEREASTRA, (HMENU)IDM_BUTON_COMMENT, NULL, NULL);
+		}
+		break;
+	}
+	case WM_SIZE: {
+		HWND hEdit;
+		GetClientRect(FEREASTRA, &rc);
+		hEdit = GetDlgItem(FEREASTRA, IDC_MAIN_EDIT);
+		SetWindowPos(hEdit, NULL, 0, 0, rc.right, rc.bottom, SWP_NOZORDER);
+		break;
+	}
+	case WM_PAINT: {
+		hDC = BeginPaint(FEREASTRA, &Ps);
+		GetClientRect(FEREASTRA, &rc);
+		printDetaliiFilm(hDC, rc, FEREASTRA, TEXT_PRINCIPAL);///////////////////////////////
+		ReleaseDC(0, hDC);
+		break;
+	}
+	case WM_DESTROY: {
+		EndPaint(FEREASTRA, &Ps);
+		PostQuitMessage(0);
+		break;
+	}
 	}
 
 	return DefWindowProcW(FEREASTRA, msg, ParamClickStanga, ParamClickDreapta);
@@ -2047,32 +2117,32 @@ LRESULT CALLBACK WndProcAddGen(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga
 	case WM_COMMAND:
 		switch (LOWORD(ParamClickStanga))
 		{
-			case IDM_BUTON_FIN_ADD_GEN: {
-				if (TEXT_PRINCIPAL != NULL)
-					free(TEXT_PRINCIPAL);
-				TEXT_PRINCIPAL = (char*)malloc(100 * sizeof(char));
-				GetWindowText(label02, TEXT_PRINCIPAL, 100);//FEREASTRA_RezCautareFilme se va folosi de textul cautat
-				if (!(TEXT_PRINCIPAL[0] >= 'a' && TEXT_PRINCIPAL[0] <= 'z') && !(TEXT_PRINCIPAL[0] >= 'A' && TEXT_PRINCIPAL[0] <= 'Z') && !(TEXT_PRINCIPAL[0] >= '0' && TEXT_PRINCIPAL[0] <= '9')) 
-					break;
+		case IDM_BUTON_FIN_ADD_GEN: {
+			if (TEXT_PRINCIPAL != NULL)
+				free(TEXT_PRINCIPAL);
+			TEXT_PRINCIPAL = (char*)malloc(100 * sizeof(char));
+			GetWindowText(label02, TEXT_PRINCIPAL, 100);//FEREASTRA_RezCautareFilme se va folosi de textul cautat
+			if (!(TEXT_PRINCIPAL[0] >= 'a' && TEXT_PRINCIPAL[0] <= 'z') && !(TEXT_PRINCIPAL[0] >= 'A' && TEXT_PRINCIPAL[0] <= 'Z') && !(TEXT_PRINCIPAL[0] >= '0' && TEXT_PRINCIPAL[0] <= '9'))
+				break;
 
-				int ok=addGen(TEXT_PRINCIPAL);
-				char text[100]; 
-				switch(ok) {
-				case 1:
-					strcpy(text, "A fost adaugat cu succes genul "); strcat(text, TEXT_PRINCIPAL);
-					MessageBox(NULL, text, WindowCaption, MB_OK);
-					break;
-				case 0:
-					strcpy(text, "Genul "); strcat(text, TEXT_PRINCIPAL); strcat(text, " este deja asociat");
-					MessageBox(NULL, text, WindowCaption, MB_OK);
-					break;
-				default:
-					MessageBeep(MB_ICONERROR);
-					MessageBox(NULL, "EROARE.Reincercati!", WindowCaption, MB_OK);
-					break;
-				}
+			int ok = addGen(TEXT_PRINCIPAL);
+			char text[100];
+			switch (ok) {
+			case 1:
+				strcpy(text, "A fost adaugat cu succes genul "); strcat(text, TEXT_PRINCIPAL);
+				MessageBox(NULL, text, WindowCaption, MB_OK);
+				break;
+			case 0:
+				strcpy(text, "Genul "); strcat(text, TEXT_PRINCIPAL); strcat(text, " este deja asociat");
+				MessageBox(NULL, text, WindowCaption, MB_OK);
+				break;
+			default:
+				MessageBeep(MB_ICONERROR);
+				MessageBox(NULL, "EROARE.Reincercati!", WindowCaption, MB_OK);
 				break;
 			}
+			break;
+		}
 		}
 		break;
 
@@ -2130,19 +2200,19 @@ LRESULT CALLBACK WndProcAddVot(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga
 				free(TEXT_PRINCIPAL);
 			TEXT_PRINCIPAL = (char*)malloc(200 * sizeof(char));
 			GetWindowText(label03, TEXT_PRINCIPAL, 200);
-			if (!(TEXT_PRINCIPAL[0] >= 'a' && TEXT_PRINCIPAL[0] <= 'z') && !(TEXT_PRINCIPAL[0] >= 'A' && TEXT_PRINCIPAL[0] <= 'Z') && !(TEXT_PRINCIPAL[0] >= '0' && TEXT_PRINCIPAL[0] <= '9')) 
+			if (!(TEXT_PRINCIPAL[0] >= 'a' && TEXT_PRINCIPAL[0] <= 'z') && !(TEXT_PRINCIPAL[0] >= 'A' && TEXT_PRINCIPAL[0] <= 'Z') && !(TEXT_PRINCIPAL[0] >= '0' && TEXT_PRINCIPAL[0] <= '9'))
 				k = 1;
 
 			if (TEXT_USER != NULL)
 				free(TEXT_USER);
 			TEXT_USER = (char*)malloc(30 * sizeof(char));
 			GetWindowText(label04, TEXT_USER, 30);
-			if (!(TEXT_USER[0] >= 'a' && TEXT_USER[0] <= 'z') && !(TEXT_USER[0] >= 'A' && TEXT_USER[0] <= 'Z') && !(TEXT_USER[0] >= '0' && TEXT_USER[0] <= '9')) 
+			if (!(TEXT_USER[0] >= 'a' && TEXT_USER[0] <= 'z') && !(TEXT_USER[0] >= 'A' && TEXT_USER[0] <= 'Z') && !(TEXT_USER[0] >= '0' && TEXT_USER[0] <= '9'))
 				k = 1;
-			
+
 			char nr[3];
 			GetWindowText(label05, nr, 3);
-			if (strlen(nr)>2 || (strlen(nr)==1 && !(nr[0] >= '1' && nr[0] <= '9')) || (strlen(nr)==2 && nr[0]!='1') || (strlen(nr) == 2 && nr[1] != '0')) 
+			if (strlen(nr)>2 || (strlen(nr) == 1 && !(nr[0] >= '1' && nr[0] <= '9')) || (strlen(nr) == 2 && nr[0] != '1') || (strlen(nr) == 2 && nr[1] != '0'))
 				k = 2;
 			NUMAR_STELE = atoi(nr);
 
@@ -2195,7 +2265,7 @@ LRESULT CALLBACK WndProcAddVot(HWND FEREASTRA, UINT msg, WPARAM ParamClickStanga
 		HFONT hfDefault;
 		HWND hEdit;
 
-		if(TEXT_PRINCIPAL!=NULL)
+		if (TEXT_PRINCIPAL != NULL)
 			label03 = CreateWindow(TEXT("Edit"), TEXT(TEXT_PRINCIPAL),
 				WS_VISIBLE | WS_CHILD,
 				20, 20, 300, 25,
@@ -2385,7 +2455,7 @@ LRESULT CALLBACK WndProcAddFilm(HWND FEREASTRA, UINT msg, WPARAM ParamClickStang
 				MessageBox(NULL, "Toate campurile sunt obligatorii", WindowCaption, MB_OK);
 				k = 1;
 			}
-			
+
 			char text[100];
 			char an[5];
 			GetWindowText(label11, an, 5);
@@ -2466,7 +2536,7 @@ LRESULT CALLBACK WndProcAddFilm(HWND FEREASTRA, UINT msg, WPARAM ParamClickStang
 					if (nr_asoc > 0) {
 						char nr[3];
 						itoa(nr_asoc, nr, 10);
-						strcpy(text, "S-a(u) asociat "); strcat(text, nr); strcat(text, " actor(i)");
+						strcpy(text, "S-a(u) asociat "); strcat(text, nr); strcat(text, "  actor(i)");
 						MessageBox(NULL, text, WindowCaption, MB_OK);
 					}
 					strcpy(text, "A fost adaugat un film in genul "); strcat(text, TEXT_GEN); strcat(text, ": "); strcat(text, TEXT_PRINCIPAL);
@@ -2861,7 +2931,7 @@ LRESULT CALLBACK WndProcCautaGen(HWND FEREASTRA, UINT msg, WPARAM ParamClickStan
 			HINSTANCE* hInstance_r = (HINSTANCE*)malloc(sizeof(HINSTANCE));
 			PWSTR lpCmdLine_r = gCMD;
 			int nCmdShow_r = 10;
-			
+
 			if (TEXT_PRINCIPAL != NULL)
 				free(TEXT_PRINCIPAL);
 			TEXT_PRINCIPAL = (char*)malloc(100 * sizeof(char));
@@ -2873,8 +2943,8 @@ LRESULT CALLBACK WndProcCautaGen(HWND FEREASTRA, UINT msg, WPARAM ParamClickStan
 
 			free(hInstance_r);
 			break;
-			}
-			
+		}
+
 		}
 		break;
 
@@ -2909,7 +2979,7 @@ LRESULT CALLBACK WndProcCautaGen(HWND FEREASTRA, UINT msg, WPARAM ParamClickStan
 		ReleaseDC(0, hDC);
 		break;
 	}
-	
+
 	case WM_DESTROY: {
 		if (TEXT_PRINCIPAL != NULL) {
 			free(TEXT_PRINCIPAL); TEXT_PRINCIPAL = NULL;
@@ -2937,13 +3007,13 @@ LRESULT CALLBACK WndProcCautaAn(HWND FEREASTRA, UINT msg, WPARAM ParamClickStang
 			int k = 0;
 			char an[5];
 			GetWindowText(label19, an, 5);
-			if (!(an[0] == '1' || an[0] == '2') || strlen(an)!=4) {
+			if (!(an[0] == '1' || an[0] == '2') || strlen(an) != 4) {
 				MessageBeep(MB_ICONERROR);
 				MessageBox(NULL, "Introduceti un an corect!", WindowCaption, MB_OK);
 				k = 1;
 			}
 			NUMAR_AN = atoi(an);
-			if(k==0)
+			if (k == 0)
 				window_REZ_CAUTARE_AN(*hInstance_r, NULL, lpCmdLine_r, nCmdShow_r);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
 			free(hInstance_r);
@@ -2965,7 +3035,7 @@ LRESULT CALLBACK WndProcCautaAn(HWND FEREASTRA, UINT msg, WPARAM ParamClickStang
 		CreateWindow(TEXT("button"), TEXT("CAUTA AN"),
 			WS_VISIBLE | WS_CHILD,
 			325, 20, 95, 25,  //margine stanga, margine sus, lungime, latime
-			FEREASTRA, (HMENU)IDM_BUTON_FIN_CAUTA_AN, NULL, NULL); 
+			FEREASTRA, (HMENU)IDM_BUTON_FIN_CAUTA_AN, NULL, NULL);
 
 		break;
 	}
@@ -3353,46 +3423,46 @@ BOOL LoadAndBlitBitmap(LPCWSTR szFileName, HDC hWinDC)
 {
 	//Load the bitmap image file
 	HBITMAP hBitmap = NULL;
-	hBitmap = (HBITMAP)LoadImage(gINST, szFileName, IMAGE_BITMAP, 0, 0, NULL);//LoadImage(NULL, szFileName, IMAGE_BITMAP, 300, 300, NULL);
+	hBitmap = (HBITMAP)LoadImage(NULL, szFileName, IMAGE_BITMAP, 0, 0, NULL);//LoadImage(NULL, szFileName, IMAGE_BITMAP, 300, 300, NULL);
 
-	// Verify that the image was loaded
-	if (hBitmap == NULL) {
-		MessageBox(NULL, __T("LoadImage Failed"), __T("Error"), MB_OK);
-		return -1;
-	}
+																			 // Verify that the image was loaded
+																			 /*if (hBitmap == NULL) {
+																			 MessageBox(NULL, __T("LoadImage Failed"), __T("Error"), MB_OK);
+																			 return -1;
+																			 }*/
 
-	// Create a device context that is compatible with the window
+																			 // Create a device context that is compatible with the window
 	HDC hLocalDC;
 	hLocalDC = CreateCompatibleDC(hWinDC);
 	// Verify that the device context was created
-	if (hLocalDC == NULL) {
-		MessageBox(NULL, __T("CreateCompatibleDCFailed"), __T("Error"), MB_OK);
-		return -1;
-	}
+	/*if (hLocalDC == NULL) {
+	MessageBox(NULL, __T("CreateCompatibleDCFailed"), __T("Error"), MB_OK);
+	return -1;
+	}*/
 
 	//Get the bitmap's parameters and verify the get
 	BITMAP qBitmap;
 	int iReturn = GetObject((HGDIOBJ)hBitmap, sizeof(BITMAP),
 		(LPVOID)&qBitmap);
-	if (!iReturn) {
-		MessageBox(NULL, __T("GetObject Failed"), __T("Error"), MB_OK);
-		return -1;
-	}
+	/*if (!iReturn) {
+	MessageBox(NULL, __T("GetObject Failed"), __T("Error"), MB_OK);
+	return -1;
+	}*/
 
 	// Select the loaded bitmap into the device context
 	HBITMAP hOldBmp = (HBITMAP)SelectObject(hLocalDC, hBitmap);
-	if (hOldBmp == NULL) {
-		MessageBox(NULL, __T("SelectObject Failed"), __T("Error"), MB_OK);
-		return -1;
-	}
+	/*if (hOldBmp == NULL) {
+	MessageBox(NULL, __T("SelectObject Failed"), __T("Error"), MB_OK);
+	return -1;
+	}*/
 
 	// Blit the dc which holds the bitmap onto the window's dc
 	BOOL qRetBlit = BitBlt(hWinDC, 0, 0, qBitmap.bmWidth, qBitmap.bmHeight,
 		hLocalDC, 0, 0, SRCCOPY);
-	if (!qRetBlit) {
-		MessageBox(NULL, __T("Blit Failed"), __T("Error"), MB_OK);
-		return -1;
-	}
+	/*if (!qRetBlit) {
+	MessageBox(NULL, __T("Blit Failed"), __T("Error"), MB_OK);
+	return -1;
+	}*/
 
 	// Unitialize and deallocate resources
 	SelectObject(hLocalDC, hOldBmp);
@@ -3401,7 +3471,7 @@ BOOL LoadAndBlitBitmap(LPCWSTR szFileName, HDC hWinDC)
 	return 0;
 }
 
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
@@ -3433,17 +3503,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLin
 	wc.lpfnWndProc = WndProc01;
 	wc.hCursor = LoadCursor(0, IDC_ARROW);
 
-	
+
 
 	RegisterClassW(&wc);//fereastra principala
-	FEREASTRA01 = CreateWindowW(wc.lpszClassName, L"WWW.FILM.API",
+	FEREASTRA01 = CreateWindowW(wc.lpszClassName, L"WWW.FILME.API",
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		200, 200, 450, 350, 0, 0, hInstance, 0);//dimensiuni: margine stanga, sus , lungime, latime
 
-	//ShowWindow(FEREASTRA01, nCmdShow);///////////////////////
-	//UpdateWindow(FEREASTRA01);//////////////////////////////
-	//HACCEL hAccelTable;/////////////////////////////////////////////////////////////////
-	//hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WIN32LESSON1));///////
+												//ShowWindow(FEREASTRA01, nCmdShow);///////////////////////
+												//UpdateWindow(FEREASTRA01);//////////////////////////////
+												//HACCEL hAccelTable;/////////////////////////////////////////////////////////////////
+												//hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WIN32LESSON1));///////
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		//if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){////////////////
 		TranslateMessage(&msg);
